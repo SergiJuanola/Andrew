@@ -1,0 +1,5 @@
+[  
+    { "keys": ["ctrl+alt+shift+l"], "command": "layout_snippets" },
+   	{ "keys": ["ctrl+alt+shift+r"], "command": "resources" },
+   	{ "keys": ["ctrl+alt+shift+b"], "command": "compile_and_install_to_device" }
+]

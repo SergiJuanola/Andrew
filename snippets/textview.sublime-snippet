@@ -1,0 +1,13 @@
+<snippet>
+	<content><![CDATA[
+<TextView 
+    android:layout_width="${1:fill_parent}${2:wrap_content}"
+    android:layout_height="${3:fill_parent}${4:wrap_content}"
+    android:id="@+id/${5}"
+    android:text="@string/"${6}/>
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>textview</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>text.xml</scope>
+</snippet>

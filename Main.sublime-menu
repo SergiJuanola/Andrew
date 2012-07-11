@@ -1,0 +1,77 @@
+[
+{
+	"id":"andrew",
+	"caption":"Andrew",
+	"mnemonic":"A",
+	"children":
+	[
+		{
+			"id":"new_android_project",
+			"command":"new_android_project",
+			"mnemonic":"N"
+		},
+		{
+			"id":"Android SDK",
+			"caption":"Android SDK",
+			"command":"open_sdk",
+			"mnemonic":"S"
+		},
+		{
+			"id":"Android Devices",
+			"command":"open_devices",
+			"mnemonic":"D"
+		},
+		{
+			"id":"layout_snippets",
+			"command":"layout_snippets",
+			"mnemonic":"L"
+		},
+		{
+			"id":"resources",
+			"command":"resources",
+			"mnemonic":"R"
+		},
+		{
+			"caption":"Compile...", 
+			"id":"compile",
+			"mnemonic":"C",
+			"children":
+			[
+				{
+					"id":"debug",
+					"command":"compile_debug",
+					"mnemonic":"C"
+				},
+				{
+					"id":"to_emulator",
+					"command":"compile_and_install_to_device",
+					"mnemonic":"D"
+				},
+				{
+					"id":"release",
+					"command":"compile_release",
+					"mnemonic":"R"
+				},
+				{"caption":"-","id":"clean"},
+				{
+					"id":"clean_project",
+					"command":"clean_project"
+				}
+			]
+		},
+		{"caption":"-", "id":"preferences"},
+		{
+			"id":"locate_dir",
+			"caption":"Locate SDK",
+			"command":"locate_sdk",
+			"mnemonic":"L"
+		},
+		{
+			"id":"workspace",
+			"caption":"Workspace path",
+			"command":"workspace_path",
+			"mnemonic":"W"
+		}
+	]
+}
+]

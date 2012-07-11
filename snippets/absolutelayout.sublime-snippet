@@ -1,0 +1,15 @@
+<snippet>
+	<content><![CDATA[
+<AbsoluteLayout
+    android:layout_width="${1:fill_parent}${2:wrap_content}"
+    android:layout_height="${3:fill_parent}${4:wrap_content}"
+    android:orientation="${5:vertical}${6:horizontal}"
+    android:id="@+id/${7}" >
+    ${8}
+</AbsoluteLayout>
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>absolutelayout</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>text.xml</scope>
+</snippet>
