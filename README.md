@@ -18,9 +18,9 @@ Before you start coding, you should set your environment.
 2. Go to the Andrew > Workspace path command and select where you want to create projects by default. More or less like the Eclipse workspace.
 3. Check everything worked by clicking Andrew > Android SDK. If everything worked you should see the Android SDK Manager window. Otherwise, check the console in order to see any error.
 4. Start coding:
-	> Create a project using Android > New Android Project and follow the steps, _or_
-	> Use your already created project by opening the project's root folder.
-		> If you do so, you'll have to run `<Android-SDK-Path>/tools/android update project --path /path/to/project` to generate a build.xml file.
+	1. Create a project using Android > New Android Project and follow the steps, _or_
+	2. Use your already created project by opening the project's root folder.
+		1. If you do so, you'll have to run `<Android-SDK-Path>/tools/android update project --path /path/to/project` to generate a build.xml file.
 
 ## Coding Helps ##
 ### Layout Snippets ###
