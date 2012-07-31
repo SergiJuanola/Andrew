@@ -228,113 +228,27 @@ class LayoutSnippetsCommand(sublime_plugin.TextCommand):
 
 class ResourcesCommand(sublime_plugin.TextCommand):
 
-    resourcesLayout = []
-    resourcesDrawable = []
-    resourcesId = []
-    resourcesString = []
+    resources_dict = {}
+    options = []
+    options_index = -1
     edit = 0
 
     def run(self, edit):
-        options = [
-            "Layout",
-            "Drawable",
-            "Id",
-            "String"
-        ]
+        self.resources_dict = sublime.active_window().active_view().settings().get('R')
+
+        self.options = self.resources_dict.keys()
+        self.options.sort()
         self.edit = edit
-        self.view.window().show_quick_panel(options, self.on_done)
+        self.view.window().show_quick_panel(self.options, self.on_done)
 
     def on_done(self, index):
-        self.loadLayouts()
-        self.loadDrawables()
-        self.loadIds()
-        self.loadStrings()
-        if index == 0:
-            self.view.window().show_quick_panel(self.resourcesLayout, self.on_done_layout)
-        elif index == 1:
-            self.view.window().show_quick_panel(self.resourcesDrawable, self.on_done_drawable)
-        elif index == 2:
-            self.view.window().show_quick_panel(self.resourcesId, self.on_done_id)
-        elif index == 3:
-            self.view.window().show_quick_panel(self.resourcesString, self.on_done_string)
-
-    def on_done_layout(self, index):
         if index is not -1:
-            self.view.insert(self.edit, self.view.sel()[0].begin(), "R.layout." + self.resourcesLayout[index])
+            self.options_index = index
+            self.view.window().show_quick_panel(self.resources_dict[self.options[index]], self.on_done_choose)
 
-    def on_done_drawable(self, index):
+    def on_done_choose(self, index):
         if index is not -1:
-            self.view.insert(self.edit, self.view.sel()[0].begin(), "R.drawable." + self.resourcesDrawable[index])
-
-    def on_done_id(self, index):
-        if index is not -1:
-            self.view.insert(self.edit, self.view.sel()[0].begin(), "R.id." + self.resourcesId[index])
-
-    def on_done_string(self, index):
-        if index is not -1:
-            self.view.insert(self.edit, self.view.sel()[0].begin(), "R.string." + self.resourcesString[index])
-
-    def loadLayouts(self):
-        self.resourcesLayout = []
-        path = self.view.window().folders()[0] + "/res/layout/"
-        for path, dirs, files in os.walk(os.path.abspath(path)):
-            for filename in fnmatch.filter(files, '*.xml'):
-                self.resourcesLayout.append(filename.replace('.xml', ''))
-        self.resourcesLayout.sort()
-
-    def loadDrawables(self):
-        self.resourcesDrawable = []
-        folders = [
-                    self.view.window().folders()[0] + "/res/drawable/",
-                    self.view.window().folders()[0] + "/res/drawable-hdpi/",
-                    self.view.window().folders()[0] + "/res/drawable-ldpi/",
-                    self.view.window().folders()[0] + "/res/drawable-mdpi/"
-                ]
-        for folder in folders:
-            for path, dirs, files in os.walk(os.path.abspath(folder)):
-                for filename in fnmatch.filter(files, '*.9.png'):
-                    filename = filename.replace('.9.png', '')
-                    if filename not in self.resourcesDrawable:
-                        self.resourcesDrawable.append(filename)
-                for filename in fnmatch.filter(files, '*.png'):
-                    filename = filename.replace('.png', '')
-                    if filename not in self.resourcesDrawable:
-                        self.resourcesDrawable.append(filename)
-                for filename in fnmatch.filter(files, '*.xml'):
-                    filename = filename.replace('.xml', '')
-                    if filename not in self.resourcesDrawable:
-                        self.resourcesDrawable.append(filename)
-        self.resourcesDrawable.sort()
-
-    def loadIds(self):
-        self.resourcesId = []
-        folder = self.view.window().folders()[0] + "/res/layout/"
-        for path, dirs, files in os.walk(os.path.abspath(folder)):
-            for filename in fnmatch.filter(files, '*.xml'):
-                file = open(folder + filename, 'r')
-                lines = file.readlines()
-                for line in lines:
-                    match = re.search("[\"|\']@\ + id\/([a-zA-Z] + [a-z_A-Z0-9]*){1}", line)
-                    if match:
-                        parsedId = match.group(1)
-                        if parsedId not in self.resourcesId:
-                            self.resourcesId.append(parsedId)
-        self.resourcesId.sort(key=str.lower)
-
-    def loadStrings(self):
-        self.resourcesString = []
-        folder = self.view.window().folders()[0] + "/res/"
-        for path, dirs, files in os.walk(os.path.abspath(folder)):
-            for filename in fnmatch.filter(files, 'strings.xml'):
-                file = open(path + "/strings.xml", 'r')
-                lines = file.readlines()
-                for line in lines:
-                    match = re.search("name\=[\"|\']([a-zA-Z] + [a-z_A-Z0-9]*)[\"|\']", line)
-                    if match:
-                        parsedString = match.group(1)
-                        if parsedString not in self.resourcesString:
-                            self.resourcesString.append(parsedString)
-        self.resourcesString.sort(key=str.lower)
+            self.view.insert(self.edit, self.view.sel()[0].begin(), "R." + self.options[self.options_index] + "." + self.resources_dict[self.options[self.options_index]][index])
 
 
 class CompileAndInstallToDeviceCommand(PathDependantCommands):
@@ -473,7 +387,7 @@ class CompileOnSaveCommand(sublime_plugin.WindowCommand):
 
     def is_checked(self):
         settings = sublime.load_settings('Andrew.sublime-settings')
-        compile_on_save = settings.get('compile_on_save')
+        compile_on_save = settings.get('compile_on_save', 1)
         if compile_on_save == 1:
             return True
         else:
@@ -486,6 +400,7 @@ class AsyncCompileDebug(threading.Thread):
 
     def run(self):
         sublime.active_window().run_command("compile_debug")
+        sublime.active_window().run_command("parse_resources")
 
 
 class AsyncCompileRelease(threading.Thread):
@@ -502,3 +417,26 @@ class AsyncInstallToDeviceRelease(threading.Thread):
 
     def run(self):
         sublime.active_window().run_command("install_to_device")
+
+
+class ParseResourcesCommand(PathDependantCommands):
+
+    resources_dict = {}
+
+    def run(self):
+        resources_dict = {}
+        for folder in self.window.folders():
+            resources = self.locatePath("R.java", folder);
+            if resources is not None:
+                file = open(resources+"/R.java", 'r')
+                resources_text = file.read()
+                resource_types = re.findall(r'public static final class ([a-z]+) {([a-z=0-9;\t _\n]*)}', resources_text)
+                for resource_type in resource_types:
+                    resource_name = resource_type[0]
+                    resource_ids = []
+                    resource_vars = re.findall(r'public static final int ([a-zA-Z0-9_]+)=', resource_type[1])
+                    for resource_var in resource_vars:
+                        resource_ids.append(resource_var)
+                    resources_dict[resource_name] = resource_ids
+                settings = sublime.active_window().active_view().settings()
+                settings.set('R', resources_dict)

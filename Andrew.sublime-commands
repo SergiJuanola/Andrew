@@ -3,12 +3,11 @@
     { "caption": "Andrew: Resources", "command": "resources" },
     { "caption": "Andrew: Android SDK", "command": "open_sdk" },
     { "caption": "Andrew: Open Devices", "command": "open_devices" },
+    { "caption": "Andrew: DDMS", "command": "open_ddms" },
     { "caption": "Andrew: Layout Snippets", "command": "layout_snippets" },
     { "caption": "Andrew: Locate SDK", "command": "locate_sdk" },
     { "caption": "Andrew: Workspace Path", "command": "workspace_path" },
     { "caption": "Andrew: Compile Debug", "command": "compile_debug" },
-    { "caption": "Andrew: Compile And Install To Emulator", "command": "compile_and_install_to_emulator" },
     { "caption": "Andrew: Compile And Install To Device", "command": "compile_and_install_to_device" },
-    { "caption": "Andrew: Clean Project", "command": "clean_project" },
-    { "caption": "Andrew: Deploy Unsigned", "command": "deploy_unsigned" }
+    { "caption": "Andrew: Clean Project", "command": "clean_project" }
 ]
