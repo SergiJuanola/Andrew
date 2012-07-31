@@ -43,6 +43,7 @@
 					"id":"compile_on_save",
 					"checkbox":true,
 					"caption":"Compile on Save",
+					"command":"compile_on_save",
 					"mnemonic":"S"
 				},
 				{

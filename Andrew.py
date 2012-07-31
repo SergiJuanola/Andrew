@@ -438,7 +438,7 @@ class BuildonSave(sublime_plugin.EventListener):
         os.chdir(folder)
 
         #let's see if project wants to be autobuilt.
-        should_build = sublime.active_window().active_view().settings().get('build_on_save')
+        should_build = sublime.load_settings('Andrew.sublime-settings').get('compile_on_save')
         if should_build == 1:
             thread = AsyncCompileDebug()
             thread.start()
@@ -459,6 +459,25 @@ class BuildonSave(sublime_plugin.EventListener):
             return
         else:
             sublime.active_window().active_view().set_status('andrew', 'Project compiled correctly')
+
+
+class CompileOnSaveCommand(sublime_plugin.WindowCommand):
+    def run(self):
+        settings = sublime.load_settings('Andrew.sublime-settings')
+        compile_on_save = settings.get('compile_on_save')
+        if compile_on_save == 1:
+            settings.set('compile_on_save', 0)
+        else:
+            settings.set('compile_on_save', 1)
+        sublime.save_settings('Andrew.sublime-settings')
+
+    def is_checked(self):
+        settings = sublime.load_settings('Andrew.sublime-settings')
+        compile_on_save = settings.get('compile_on_save')
+        if compile_on_save == 1:
+            return True
+        else:
+            return False
 
 
 class AsyncCompileDebug(threading.Thread):
