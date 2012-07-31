@@ -6,20 +6,22 @@
 	"children":
 	[
 		{
-			"id":"new_android_project",
-			"command":"new_android_project",
-			"mnemonic":"N"
-		},
-		{
-			"id":"Android SDK",
-			"caption":"Android SDK",
-			"command":"open_sdk",
-			"mnemonic":"S"
-		},
-		{
-			"id":"Android Devices",
-			"command":"open_devices",
-			"mnemonic":"D"
+			"id":"projects",
+			"caption":"Projects",
+			"mnemonic":"P",
+			"children":
+			[
+				{
+					"id":"new_android_project",
+					"command":"new_android_project",
+					"mnemonic":"N"
+				},
+				{
+					"id":"import_android_project",
+					"command":"import_android_project",
+					"mnemonic":"I"
+				}
+			]
 		},
 		{
 			"id":"layout_snippets",
@@ -37,6 +39,12 @@
 			"mnemonic":"C",
 			"children":
 			[
+				{
+					"id":"compile_on_save",
+					"checkbox":true,
+					"caption":"Compile on Save",
+					"mnemonic":"S"
+				},
 				{
 					"id":"debug",
 					"command":"compile_debug",
@@ -59,18 +67,50 @@
 				}
 			]
 		},
-		{"caption":"-", "id":"preferences"},
 		{
-			"id":"locate_dir",
-			"caption":"Locate SDK",
-			"command":"locate_sdk",
-			"mnemonic":"L"
+			"caption":"Android managers", 
+			"id":"andrew_managers",
+			"mnemonic":"M",
+			"children":
+			[
+				{
+					"id":"Android SDK Manager",
+					"caption":"Android SDK Manager",
+					"command":"open_sdk",
+					"mnemonic":"S"
+				},
+				{
+					"id":"Android Devices",
+					"command":"open_devices",
+					"mnemonic":"D"
+				},
+				{
+					"id":"DDMS",
+					"caption":"DDMS",
+					"command":"open_ddms",
+					"mnemonic":"M"
+				}
+			]
 		},
 		{
-			"id":"workspace",
-			"caption":"Workspace path",
-			"command":"workspace_path",
-			"mnemonic":"W"
+			"caption":"Preferences", 
+			"id":"andrew_preferences",
+			"mnemonic":"P",
+			"children":
+			[
+				{
+					"id":"locate_dir",
+					"caption":"Locate SDK",
+					"command":"locate_sdk",
+					"mnemonic":"L"
+				},
+				{
+					"id":"workspace",
+					"caption":"Workspace path",
+					"command":"workspace_path",
+					"mnemonic":"W"
+				}
+			]
 		}
 	]
 }
