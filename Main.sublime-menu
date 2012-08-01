@@ -22,6 +22,19 @@
 					"mnemonic":"I"
 				}
 			]
+		},{
+			"id":"refactor",
+			"caption":"Refactor...",
+			"mnemonic":"R",
+			"children":
+			[
+				{
+					"id":"refactor_string",
+					"caption":"String",
+					"command":"refactor_string",
+					"mnemonic":"N"
+				}
+			]
 		},
 		{
 			"id":"layout_snippets",
