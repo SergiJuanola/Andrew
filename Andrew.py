@@ -1,3 +1,9 @@
+"""
+Andrew Plugin for Sublime Text 2
+@author Sergi Juanola
+@version 0.2
+"""
+
 import sublime
 import sublime_plugin
 import subprocess
@@ -234,7 +240,11 @@ class ResourcesCommand(sublime_plugin.TextCommand):
     edit = 0
 
     def run(self, edit):
-        self.resources_dict = sublime.active_window().active_view().settings().get('R')
+        self.resources_dict = sublime.active_window().active_view().settings().get('R', {})
+
+        if len(self.resources_dict.keys()) == 0:
+            sublime.active_window().run_command("parse_resources")
+            self.resources_dict = sublime.active_window().active_view().settings().get('R', {})
 
         self.options = self.resources_dict.keys()
         self.options.sort()
@@ -421,8 +431,6 @@ class AsyncInstallToDeviceRelease(threading.Thread):
 
 class ParseResourcesCommand(PathDependantCommands):
 
-    resources_dict = {}
-
     def run(self):
         resources_dict = {}
         for folder in self.window.folders():
@@ -437,6 +445,7 @@ class ParseResourcesCommand(PathDependantCommands):
                     resource_vars = re.findall(r'public static final int ([a-zA-Z0-9_]+)=', resource_type[1])
                     for resource_var in resource_vars:
                         resource_ids.append(resource_var)
-                    resources_dict[resource_name] = resource_ids
+                    if len(resource_ids):
+                        resources_dict[resource_name] = resource_ids
                 settings = sublime.active_window().active_view().settings()
                 settings.set('R', resources_dict)

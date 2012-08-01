@@ -2,6 +2,18 @@
 
 Andrew is a lightweight Android Development Project for Sublime Text 2. It combines perfectly with [ADBView](https://github.com/quarnster/ADBView) to get a functional Android development environment.
 
+## Recent Changes ##
+
+###0.2###
+
+* Major menu restructuring.
+* Debug compiling is done on background when `Andrew > Compile... > Compile on Save` is on.
+* Added DDMS option, along with SDK Manager and Devices Manager.
+* Resources is populated after an On-save compile or when empty. Now it loads faster and works with the last resources.
+
+###0.1###
+* First version
+
 ## Requirements ##
 
 In order to use Andrew, you need:
