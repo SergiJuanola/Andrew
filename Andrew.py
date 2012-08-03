@@ -66,8 +66,8 @@ class NewAndroidProjectCommand(sublime_plugin.WindowCommand):
                 row2 = msg.pop()
                 if(len(msg) > 0):
                     msg.pop()
-                m1 = re.search('[\ ]*Name: ([a-zA-Z0-9\ \.]*)', row1)
-                m2 = re.search('(android-[0-9] + )', row2)
+                m1 = re.search(r'[\ ]*Name: ([a-zA-Z0-9\ \.]*)', row1)
+                m2 = re.search(r'(android-[0-9]+)', row2)
                 name = m1.group(1)
                 version = m2.group(1)
                 self.versions.append(version)
@@ -298,7 +298,7 @@ class CompileAndInstallToDeviceCommand(PathDependantCommands):
         file = open(xmlFile, 'r')
         lines = file.readlines()
         for line in lines:
-            match = re.search("<project ?.* name=\"([\.\ a-zA-Z1-9] + )\"", line)
+            match = re.search(r"<project ?.* name=\"([\.\ a-zA-Z1-9]+)\"", line)
             if match:
                 return match.group(1)
 
@@ -306,7 +306,7 @@ class CompileAndInstallToDeviceCommand(PathDependantCommands):
         file = open(xmlFile, 'r')
         lines = file.readlines()
         for line in lines:
-            match = re.search("package=\"([\.a-zA-Z1-9] + )\"", line)
+            match = re.search(r"package=\"([\.a-zA-Z1-9]+)\"", line)
             if match:
                 return match.group(1)
 
@@ -342,7 +342,7 @@ class InstallToDeviceCommand(PathDependantCommands):
         file = open(xmlFile, 'r')
         lines = file.readlines()
         for line in lines:
-            match = re.search("<project ?.* name=\"([\.\ a-zA-Z1-9] + )\"", line)
+            match = re.search(r"<project ?.* name=\"([\.\ a-zA-Z1-9]+)\"", line)
             if match:
                 return match.group(1)
 
@@ -350,7 +350,7 @@ class InstallToDeviceCommand(PathDependantCommands):
         file = open(xmlFile, 'r')
         lines = file.readlines()
         for line in lines:
-            match = re.search("package=\"([\.a-zA-Z1-9] + )\"", line)
+            match = re.search(r"package=\"([\.a-zA-Z1-9]+)\"", line)
             if match:
                 return match.group(1)
 
