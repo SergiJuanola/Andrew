@@ -1,9 +1,9 @@
 """
 Andrew Plugin for Sublime Text 2
 @author Sergi Juanola
-@version 0.2
+@version 0.3
 """
-
+# -*- coding: utf-8 -*-
 import sublime
 import sublime_plugin
 import subprocess
@@ -434,9 +434,9 @@ class ParseResourcesCommand(PathDependantCommands):
     def run(self):
         resources_dict = {}
         for folder in self.window.folders():
-            resources = self.locatePath("R.java", folder);
+            resources = self.locatePath("R.java", folder)
             if resources is not None:
-                file = open(resources+"/R.java", 'r')
+                file = open(resources + "/R.java", 'r')
                 resources_text = file.read()
                 resource_types = re.findall(r'public static final class ([a-z]+) {([a-z=0-9;\t _\n]*)}', resources_text)
                 for resource_type in resource_types:
@@ -449,3 +449,63 @@ class ParseResourcesCommand(PathDependantCommands):
                         resources_dict[resource_name] = resource_ids
                 settings = sublime.active_window().active_view().settings()
                 settings.set('R', resources_dict)
+
+
+class RefactorStringCommand(sublime_plugin.TextCommand):
+
+    text = ""
+    tag = ""
+    region = None
+    edit = None
+
+    def run(self, edit):
+        self.edit = edit
+        sels = self.view.sel()
+        new_sels = []
+        for sel in sels:
+            begin = sel.a
+            end = sel.b
+            while self.view.substr(begin) != '"':
+                begin -= 1
+            begin += 1
+            while self.view.substr(end) != '"':
+                end += 1
+            new_sels.append(sublime.Region(begin, end))
+        for sel in new_sels:
+            self.text = self.view.substr(sel)
+            self.tag = self.slugify(self.view.substr(sel))
+            self.region = sel
+            sublime.active_window().show_input_panel("String name:", self.tag, self.on_done, None, None)
+
+    def on_done(self, text):
+        """if index < 0:
+            return
+        snippet = self.snippets[index]
+        self.view.run_command('insert_snippet', {"name": "Packages/Andrew/snippets/" + snippet + ".sublime-snippet"})"""
+        self.tag = text
+        self.add_to_strings_xml(self.text, self.tag)
+
+    def slugify(self, str):
+        str = str.lower()
+        return re.sub(r'\W+', '_', str)
+
+    def add_to_strings_xml(self, text, tag):
+        for folder in sublime.active_window().folders():
+            stringsxml = self.locatePath("strings.xml", folder)
+            if stringsxml is not None:
+                stringsxml += "/strings.xml"
+                file = open(stringsxml, 'r')
+                strings_content = file.read()
+                file.close()
+                file = open(stringsxml, 'w')
+                new_block = '<string name="' + tag + '">' + text + '</string>'
+                strings_content = strings_content.replace("</resources>", "\t" + new_block + "\n</resources>")
+                sublime.active_window().active_view().replace(self.edit, self.region, "@string/" + self.tag)
+                print strings_content
+                file.write(strings_content)
+                file.close()
+
+    def locatePath(self, pattern, root=os.curdir):
+        for path, dirs, files in os.walk(os.path.abspath(root)):
+            for filename in fnmatch.filter(files, pattern):
+                return path

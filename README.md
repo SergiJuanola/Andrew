@@ -4,6 +4,10 @@ Andrew is a lightweight Android Development Project for Sublime Text 2. It combi
 
 ## Recent Changes ##
 
+###0.3###
+
+* `Refactor... > String` grabs a text in your opened file and refactors it into `res/values/strings.xml`
+
 ###0.2###
 
 * Major menu restructuring.
@@ -26,9 +30,9 @@ In order to use Andrew, you need:
 
 Before you start coding, you should set your environment. 
 
-1. Go to the Andrew > Locate SDK command and choose whether you prefer to write it down manually or search it automatically.
-2. Go to the Andrew > Workspace path command and select where you want to create projects by default. More or less like the Eclipse workspace.
-3. Check everything worked by clicking Andrew > Android SDK. If everything worked you should see the Android SDK Manager window. Otherwise, check the console in order to see any error.
+1. Go to the `Andrew > Preferences > Locate SDK` command and choose whether you prefer to write it down manually or search it automatically.
+2. Go to the `Andrew > Preferences > Workspace path` command and select where you want to create projects by default. More or less like the Eclipse workspace.
+3. Check everything worked by clicking `Andrew > Android managers > Android SDK Manager`. If everything worked you should see the Android SDK Manager window. Otherwise, check the console in order to see any error.
 4. Start coding:
 	1. Create a project using Android > New Android Project and follow the steps, _or_
 	2. Use your already created project by opening the project's root folder.
