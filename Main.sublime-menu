@@ -53,19 +53,13 @@
 			"children":
 			[
 				{
-					"id":"compile_on_save",
-					"checkbox":true,
-					"caption":"Compile on Save",
-					"command":"compile_on_save",
-					"mnemonic":"S"
-				},
-				{
 					"id":"debug",
 					"command":"compile_debug",
 					"mnemonic":"C"
 				},
 				{
 					"id":"to_emulator",
+					"caption":"Install to device",
 					"command":"compile_and_install_to_device",
 					"mnemonic":"D"
 				},
@@ -74,7 +68,14 @@
 					"command":"compile_release",
 					"mnemonic":"R"
 				},
-				{"caption":"-","id":"clean"},
+				{"caption":"-","id":"compile_extras"},
+				{
+					"id":"compile_on_save",
+					"checkbox":true,
+					"caption":"Compile on Save",
+					"command":"compile_on_save",
+					"mnemonic":"S"
+				},
 				{
 					"id":"clean_project",
 					"command":"clean_project"

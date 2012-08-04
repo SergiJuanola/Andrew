@@ -264,35 +264,9 @@ class ResourcesCommand(sublime_plugin.TextCommand):
 class CompileAndInstallToDeviceCommand(PathDependantCommands):
 
     def run(self):
-        for folder in self.window.folders():
-            buildxml = self.locatePath("build.xml", folder)
-            if buildxml is not None:
-                path = buildxml
-                p = subprocess.Popen("ant debug", cwd=path, stdout=subprocess.PIPE, stderr=None, shell=True)
-                if p.stdout is not None:
-                    msg = p.stdout.readlines()
-                    for line in msg:
-                        print line
-
-                buildxml = path + '/build.xml'
-                manifest = path + '/AndroidManifest.xml'
-
-                projectName = self.findProject(buildxml)
-                package = self.findPackage(manifest)
-
-                settings = sublime.load_settings('Andrew.sublime-settings')
-                cmd_a = settings.get('android_sdk_path') + "/platform-tools/adb -d install -r " + projectName + "-debug.apk"
-                p2 = subprocess.Popen(cmd_a, cwd=path + "/bin", stdout=subprocess.PIPE, stderr=None, shell=True)
-                if p2.stdout is not None:
-                    msg = p2.stdout.readlines()
-                    for line in msg:
-                        print line
-                cmd_b = settings.get('android_sdk_path') + "/platform-tools/adb shell monkey -v -p " + package + " 1"
-                p3 = subprocess.Popen(cmd_b, cwd=path, stdout=subprocess.PIPE, stderr=None, shell=True)
-                if p3.stdout is not None:
-                    msg = p2.stdout.readlines()
-                    for line in msg:
-                        print line
+        thread = AsyncInstallToDevice()
+        thread.start()
+        self.handle_thread(thread)
 
     def findProject(self, xmlFile):
         file = open(xmlFile, 'r')
@@ -309,6 +283,26 @@ class CompileAndInstallToDeviceCommand(PathDependantCommands):
             match = re.search(r"package=\"([\.a-zA-Z1-9]+)\"", line)
             if match:
                 return match.group(1)
+
+    def handle_thread(self, thread, i=0, dir=1):
+        if thread.is_alive():
+            before = i % 8
+            after = (7) - before
+            if not after:
+                dir = -1
+            if not before:
+                dir = 1
+            i += dir
+
+            if thread.phase == 1:
+                state_name = 'Compiling project'
+            elif thread.phase == 2:
+                state_name = 'Installing to device'
+            sublime.active_window().active_view().set_status('andrew', state_name + ' [%s#%s]' % (' ' * before, ' ' * after))
+            sublime.set_timeout(lambda: self.handle_thread(thread, i, dir), 25)
+            return
+        else:
+            sublime.active_window().active_view().set_status('andrew', 'Project installed correctly')
 
 
 class InstallToDeviceCommand(PathDependantCommands):
@@ -358,9 +352,6 @@ class InstallToDeviceCommand(PathDependantCommands):
 class BuildonSave(sublime_plugin.EventListener):
 
     def on_post_save(self, view):
-        folder = sublime.active_window().folders()[0]
-        os.chdir(folder)
-
         #let's see if project wants to be autobuilt.
         should_build = sublime.load_settings('Andrew.sublime-settings').get('compile_on_save')
         if should_build == 1:
@@ -397,7 +388,7 @@ class CompileOnSaveCommand(sublime_plugin.WindowCommand):
 
     def is_checked(self):
         settings = sublime.load_settings('Andrew.sublime-settings')
-        compile_on_save = settings.get('compile_on_save', 1)
+        compile_on_save = settings.get('compile_on_save', 0)
         if compile_on_save == 1:
             return True
         else:
@@ -421,11 +412,20 @@ class AsyncCompileRelease(threading.Thread):
         sublime.active_window().run_command("compile_release")
 
 
-class AsyncInstallToDeviceRelease(threading.Thread):
+class AsyncInstallToDevice(threading.Thread):
+
+    phase = 0
+
     def __init__(self):
         threading.Thread.__init__(self)
 
     def run(self):
+        settings = sublime.load_settings('Andrew.sublime-settings')
+        compile_on_save = settings.get('compile_on_save', 0)
+        if compile_on_save == 0:
+            self.phase = 1
+            sublime.active_window().run_command("compile_debug")
+        self.phase = 2
         sublime.active_window().run_command("install_to_device")
 
 
