@@ -43,7 +43,8 @@ class NewAndroidProjectCommand(sublime_plugin.WindowCommand):
     def on_done4(self, text):
         self.foldername = text
         settings = sublime.load_settings('Andrew.sublime-settings')
-        cmd_a = settings.get('android_sdk_path') + "tools/android create project --target " + self.version + " --path " + self.foldername + " --activity " + self.activity + " --package " + self.package
+        command = os.path.join(settings.get('android_sdk_path'), "tools", "android")
+        cmd_a = command + " create project --target " + self.version + " --path " + self.foldername + " --activity " + self.activity + " --package " + self.package
         p = subprocess.Popen(cmd_a, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
         if p.stdout is not None:
             msg = p.stdout.readline()
@@ -57,7 +58,8 @@ class NewAndroidProjectCommand(sublime_plugin.WindowCommand):
         self.versionsHeaders = []
         self.versions = []
         settings = sublime.load_settings('Andrew.sublime-settings')
-        cmd_a = settings.get('android_sdk_path') + 'tools/android list | grep -A 1 "android-"'
+        command = os.path.join(settings.get('android_sdk_path'), "tools", "android")
+        cmd_a = command + ' list | grep -A 1 "android-"'
         p = subprocess.Popen(cmd_a, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
         if p.stdout is not None:
             msg = p.stdout.readlines()
@@ -78,29 +80,32 @@ class NewAndroidProjectCommand(sublime_plugin.WindowCommand):
 class CallAdbCommand(sublime_plugin.WindowCommand):
     def run(self):
         settings = sublime.load_settings('Andrew.sublime-settings')
-        cmd_a = settings.get('android_sdk_path') + "/platform-tools/adb devices"
+        command = os.path.join(settings.get('android_sdk_path'), "platform-tools", "adb")
+        cmd_a = command + " devices"
         subprocess.Popen(cmd_a, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
 
 
 class OpenSdkCommand(sublime_plugin.WindowCommand):
     def run(self):
         settings = sublime.load_settings('Andrew.sublime-settings')
-        cmd_a = settings.get('android_sdk_path') + "/tools/android sdk"
+        command = os.path.join(settings.get('android_sdk_path'), "tools", "android")
+        cmd_a = command + " sdk"
         subprocess.Popen(cmd_a, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
 
 
 class OpenDevicesCommand(sublime_plugin.WindowCommand):
     def run(self):
         settings = sublime.load_settings('Andrew.sublime-settings')
-        cmd_a = settings.get('android_sdk_path') + "/tools/android avd"
+        command = os.path.join(settings.get('android_sdk_path'), "tools", "android")
+        cmd_a = command + " avd"
         subprocess.Popen(cmd_a, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
 
 
 class OpenDdmsCommand(sublime_plugin.WindowCommand):
     def run(self):
         settings = sublime.load_settings('Andrew.sublime-settings')
-        cmd_a = settings.get('android_sdk_path') + "/tools/ddms"
-        subprocess.Popen(cmd_a, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+        command = os.path.join(settings.get('android_sdk_path'), "tools", "ddms")
+        subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
 
 
 class LocateSdkCommand(sublime_plugin.WindowCommand):
@@ -319,13 +324,14 @@ class InstallToDeviceCommand(PathDependantCommands):
                 package = self.findPackage(manifest)
 
                 settings = sublime.load_settings('Andrew.sublime-settings')
-                cmd_a = settings.get('android_sdk_path') + "/platform-tools/adb -d install -r " + projectName + "-debug.apk"
+                command = os.path.join(settings.get('android_sdk_path'), "platform-tools", "adb")
+                cmd_a = command + " -d install -r " + projectName + "-debug.apk"
                 p2 = subprocess.Popen(cmd_a, cwd=path + "/bin", stdout=subprocess.PIPE, stderr=None, shell=True)
                 if p2.stdout is not None:
                     msg = p2.stdout.readlines()
                     for line in msg:
                         print line
-                cmd_b = settings.get('android_sdk_path') + "/platform-tools/adb shell monkey -v -p " + package + " 1"
+                cmd_b = command + " shell monkey -v -p " + package + " 1"
                 p3 = subprocess.Popen(cmd_b, cwd=path, stdout=subprocess.PIPE, stderr=None, shell=True)
                 if p3.stdout is not None:
                     msg = p2.stdout.readlines()
