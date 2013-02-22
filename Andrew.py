@@ -62,16 +62,8 @@ class NewAndroidProjectCommand(sublime_plugin.WindowCommand):
         cmd_a = command + ' list | grep -A 1 "android-"'
         p = subprocess.Popen(cmd_a, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
         if p.stdout is not None:
-            msg = p.stdout.readlines()
-            while len(msg) > 1:
-                row1 = msg.pop()
-                row2 = msg.pop()
-                if(len(msg) > 0):
-                    msg.pop()
-                m1 = re.search(r'[\ ]*Name: ([a-zA-Z0-9\ \.]*)', row1)
-                m2 = re.search(r'(android-[0-9]+)', row2)
-                name = m1.group(1)
-                version = m2.group(1)
+            msg = p.stdout.read()
+            for version, name in re.findall(r'"(android-[0-9]+)"\s*Name: ([a-zA-Z0-9\ \.]*)', msg):
                 self.versions.append(version)
                 self.versionsHeaders.append([name, version])
         return self.versionsHeaders
