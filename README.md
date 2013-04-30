@@ -4,6 +4,11 @@ Andrew is a lightweight Android Development Project for Sublime Text 2. It combi
 
 ## Recent Changes ##
 
+###0.3.1###
+
+* Moved to Github
+* Removed Windows support (until it is finally on)
+
 ###0.3###
 
 * `Refactor... > String` grabs a text in your opened file and refactors it into `res/values/strings.xml`
