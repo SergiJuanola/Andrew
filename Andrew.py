@@ -17,6 +17,7 @@ class NewAndroidProjectCommand(sublime_plugin.WindowCommand):
     version = ""
     package = ""
     activity = ""
+    projectName = ""
     foldername = ""
     versions = []
     versionsHeaders = []
@@ -25,7 +26,8 @@ class NewAndroidProjectCommand(sublime_plugin.WindowCommand):
         self.window.show_input_panel("Application Name:", "", self.on_done1, None, None)
 
     def on_done1(self, text):
-        self.activity = text
+        self.projectName = text
+        self.activity = ''.join(text.split())
         versionsHeaders = self.get_android_versions()
         self.window.show_quick_panel(versionsHeaders, self.on_done2)
 
@@ -50,7 +52,7 @@ class NewAndroidProjectCommand(sublime_plugin.WindowCommand):
         p = subprocess.Popen(cmd_a, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
         if p.stdout is not None:
             msg = p.stdout.readline()
-            print msg
+            print(msg)
         self.window.open_file(self.foldername + "AndroidManifest.xml")
         os.chdir(self.foldername)
         self.window.run_command("save_project_as")
@@ -163,7 +165,7 @@ class CompileDebugCommand(PathDependantCommands):
                 if p.stdout is not None:
                     msg = p.stdout.readlines()
                     for line in msg:
-                        print line
+                        print(line)
 
 
 class CompileReleaseCommand(PathDependantCommands):
@@ -175,7 +177,7 @@ class CompileReleaseCommand(PathDependantCommands):
                 p = subprocess.Popen("ant release", cwd=path, stdout=subprocess.PIPE, stderr=None, shell=True)
                 if p.stdout is not None:
                     msg = p.stdout.readline()
-                    print msg
+                    print(msg)
 
 
 class CleanProjectCommand(PathDependantCommands):
@@ -188,7 +190,7 @@ class CleanProjectCommand(PathDependantCommands):
                 if p.stdout is not None:
                     msg = p.stdout.readlines()
                     for line in msg:
-                        print line
+                        print(line)
 
 
 class LayoutSnippetsCommand(sublime_plugin.TextCommand):
@@ -241,11 +243,12 @@ class ResourcesCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         self.resources_dict = sublime.active_window().active_view().settings().get('R', {})
 
-        if len(self.resources_dict.keys()) == 0:
+        self.options = list(self.resources_dict.keys())
+
+        if len(self.options) == 0:
             sublime.active_window().run_command("parse_resources")
             self.resources_dict = sublime.active_window().active_view().settings().get('R', {})
 
-        self.options = self.resources_dict.keys()
         self.options.sort()
         self.edit = edit
         self.view.window().show_quick_panel(self.options, self.on_done)
@@ -324,13 +327,13 @@ class InstallToDeviceCommand(PathDependantCommands):
                 if p2.stdout is not None:
                     msg = p2.stdout.readlines()
                     for line in msg:
-                        print line
+                        print(line)
                 cmd_b = command + " shell monkey -v -p " + package + " 1"
                 p3 = subprocess.Popen(cmd_b, cwd=path, stdout=subprocess.PIPE, stderr=None, shell=True)
                 if p3.stdout is not None:
                     msg = p2.stdout.readlines()
                     for line in msg:
-                        print line
+                        print(line)
 
     def findProject(self, xmlFile):
         file = open(xmlFile, 'r')
@@ -501,7 +504,7 @@ class RefactorStringCommand(sublime_plugin.TextCommand):
                 new_block = '<string name="' + tag + '">' + text + '</string>'
                 strings_content = strings_content.replace("</resources>", "\t" + new_block + "\n</resources>")
                 sublime.active_window().active_view().replace(self.edit, self.region, "@string/" + self.tag)
-                print strings_content
+                print(strings_content)
                 file.write(strings_content)
                 file.close()
 
