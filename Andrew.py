@@ -43,7 +43,7 @@ class NewAndroidProjectCommand(sublime_plugin.WindowCommand):
     def on_done4(self, text):
         self.foldername = text
         if not os.path.exists(text):
-            os.mkdirs(text)
+            os.makedirs(text)
         settings = sublime.load_settings('Andrew.sublime-settings')
         command = os.path.join(settings.get('android_sdk_path'), "tools", "android")
         cmd_a = command + " create project --target " + self.version + " --path " + self.foldername + " --activity " + self.activity + " --package " + self.package
