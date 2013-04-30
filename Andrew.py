@@ -12,7 +12,6 @@ import fnmatch
 import re
 import threading
 
-
 class NewAndroidProjectCommand(sublime_plugin.WindowCommand):
     version = ""
     package = ""
@@ -67,7 +66,7 @@ class NewAndroidProjectCommand(sublime_plugin.WindowCommand):
         p = subprocess.Popen(cmd_a, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
         if p.stdout is not None:
             msg = p.stdout.read()
-            for version, name in re.findall(r'"(android-[0-9]+)"\s*Name: ([a-zA-Z0-9\ \.]*)', msg):
+            for version, name in re.findall(r'"(android-[0-9]+)"\s*Name: ([a-zA-Z0-9\ \.]*)', msg.decode("utf-8", "ignore")):
                 self.versions.append(version)
                 self.versionsHeaders.append([name, version])
         return self.versionsHeaders
@@ -122,7 +121,7 @@ class LocateSdkCommand(sublime_plugin.WindowCommand):
         cmd_a = "find / -name apkbuilder -print0 2>/dev/null | grep -FzZ -m 1 tools/apkbuilder"
         p = subprocess.Popen(cmd_a, stdout=subprocess.PIPE, stderr=None, shell=True)
         if p.stdout is not None:
-            msg = p.stdout.readline()
+            msg = p.stdout.readline().decode("utf-8", "ignore")
             msg = msg.rstrip(' \t\r\n\0').replace('tools/apkbuilder', '')
         self.window.show_input_panel("Android SDK Path:", msg, self.on_done2, None, None)
 
