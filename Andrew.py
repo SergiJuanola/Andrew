@@ -12,49 +12,10 @@ import fnmatch
 import re
 import threading
 
-class NewAndroidProjectCommand(sublime_plugin.WindowCommand):
-    version = ""
-    package = ""
-    activity = ""
-    projectName = ""
-    foldername = ""
+class AndroidVersionCommand(sublime_plugin.WindowCommand):
+    
     versions = []
     versionsHeaders = []
-
-    def run(self):
-        self.window.show_input_panel("Application Name:", "", self.on_done1, None, None)
-
-    def on_done1(self, text):
-        self.projectName = text
-        self.activity = ''.join(text.split())
-        versionsHeaders = self.get_android_versions()
-        self.window.show_quick_panel(versionsHeaders, self.on_done2)
-
-    def on_done2(self, index):
-        if(index == -1):
-            return
-        self.version = self.versions[index]
-        self.window.show_input_panel("Android Package:", "com.", self.on_done3, None, None)
-
-    def on_done3(self, text):
-        self.package = text
-        settings = sublime.load_settings('Andrew.sublime-settings')
-        self.window.show_input_panel("Path to project:", settings.get('workspace') + self.activity + os.sep, self.on_done4, None, None)
-
-    def on_done4(self, text):
-        self.foldername = text
-        if not os.path.exists(text):
-            os.makedirs(text)
-        settings = sublime.load_settings('Andrew.sublime-settings')
-        command = os.path.join(settings.get('android_sdk_path'), "tools", "android")
-        cmd_a = command + " create project --target " + self.version + " --path " + self.foldername + " --activity " + self.activity + " --package " + self.package
-        p = subprocess.Popen(cmd_a, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
-        if p.stdout is not None:
-            msg = p.stdout.readline()
-        self.window.open_file(self.foldername + "AndroidManifest.xml")
-        os.chdir(self.foldername)
-        self.window.run_command("save_project_as")
-        self.window.run_command("prompt_add_folder")
 
     def get_android_versions(self):
         if os.name == "nt":
@@ -91,6 +52,75 @@ class NewAndroidProjectCommand(sublime_plugin.WindowCommand):
                 self.versionsHeaders.append([name, version])
         return self.versionsHeaders
 
+
+class NewAndroidProjectCommand(AndroidVersionCommand):
+    version = ""
+    package = ""
+    activity = ""
+    projectName = ""
+    foldername = ""
+
+    def run(self):
+        self.window.show_input_panel("Application Name:", "", self.on_done1, None, None)
+
+    def on_done1(self, text):
+        self.projectName = text
+        self.activity = ''.join(text.split())
+        versionsHeaders = self.get_android_versions()
+        self.window.show_quick_panel(versionsHeaders, self.on_done2)
+
+    def on_done2(self, index):
+        if(index == -1):
+            return
+        self.version = self.versions[index]
+        self.window.show_input_panel("Android Package:", "com.", self.on_done3, None, None)
+
+    def on_done3(self, text):
+        self.package = text
+        settings = sublime.load_settings('Andrew.sublime-settings')
+        self.window.show_input_panel("Path to project:", settings.get('workspace') + self.activity + os.sep, self.on_done4, None, None)
+
+    def on_done4(self, text):
+        self.foldername = text
+        if not os.path.exists(text):
+            os.makedirs(text)
+        settings = sublime.load_settings('Andrew.sublime-settings')
+        command = os.path.join(settings.get('android_sdk_path'), "tools", "android")
+        cmd_a = command + " create project --target " + self.version + " --path " + self.foldername + " --activity " + self.activity + " --package " + self.package
+        p = subprocess.Popen(cmd_a, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+        if p.stdout is not None:
+            msg = p.stdout.readline()
+        self.window.open_file(self.foldername + "AndroidManifest.xml")
+        os.chdir(self.foldername)
+        self.window.run_command("save_project_as")
+        self.window.run_command("prompt_add_folder")
+
+class ImportAndroidProject(AndroidVersionCommand):
+    version = ""
+    foldername = ""
+
+    def run(self):
+        self.window.show_input_panel("Project path:", "", self.on_done1, None, None)
+
+    def on_done1(self, text):
+        self.foldername = text
+        versionsHeaders = self.get_android_versions()
+        self.window.show_quick_panel(versionsHeaders, self.on_done2)
+
+    def on_done2(self, index):
+        if(index == -1):
+            return
+        self.version = self.versions[index]
+        settings = sublime.load_settings('Andrew.sublime-settings')
+        command = os.path.join(settings.get('android_sdk_path'), "tools", "android")
+        cmd_a = command + " update project --target " + self.version + " --path " + self.foldername 
+        p = subprocess.Popen(cmd_a, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+        if p.stdout is not None:
+            msg = p.stdout.readline()
+        self.window.open_file(self.foldername + "AndroidManifest.xml")
+        os.chdir(self.foldername)
+        self.window.run_command("save_project_as")
+        self.window.run_command("prompt_add_folder")
 
 class CallAdbCommand(sublime_plugin.WindowCommand):
     def run(self):
