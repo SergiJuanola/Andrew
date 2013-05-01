@@ -119,9 +119,14 @@ class OpenDevicesCommand(sublime_plugin.WindowCommand):
 class OpenDdmsCommand(sublime_plugin.WindowCommand):
     def run(self):
         settings = sublime.load_settings('Andrew.sublime-settings')
-        command = os.path.join(settings.get('android_sdk_path'), "tools", "monitor")
+        command = os.path.join(settings.get('android_sdk_path'), "tools", "ddms")
         subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
 
+class OpenMonitorCommand(sublime_plugin.WindowCommand):
+    def run(self):
+        settings = sublime.load_settings('Andrew.sublime-settings')
+        command = os.path.join(settings.get('android_sdk_path'), "tools", "monitor")
+        subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
 
 class LocateSdkCommand(sublime_plugin.WindowCommand):
     def run(self):
