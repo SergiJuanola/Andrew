@@ -1,9 +1,7 @@
 [
     { "caption": "Andrew: New Android Project", "command": "new_android_project" },
     { "caption": "Andrew: Resources", "command": "resources" },
-    { "caption": "Andrew: Android SDK", "command": "open_sdk" },
-    { "caption": "Andrew: Open Devices", "command": "open_devices" },
-    { "caption": "Andrew: DDMS", "command": "open_ddms" },
+    { "caption": "Andrew: Monitor", "command": "open_monitor" },
     { "caption": "Andrew: Layout Snippets", "command": "layout_snippets" },
     { "caption": "Andrew: Locate SDK", "command": "locate_sdk" },
     { "caption": "Andrew: Workspace Path", "command": "workspace_path" },
