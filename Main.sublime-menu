@@ -47,6 +47,12 @@
 			"mnemonic":"R"
 		},
 		{
+			"caption":"Android Monitor", 
+			"id":"android_monitor",
+			"mnemonic":"M",
+			"command":"open_monitor"
+		},
+		{
 			"caption":"Compile...", 
 			"id":"compile",
 			"mnemonic":"C",
@@ -79,31 +85,6 @@
 				{
 					"id":"clean_project",
 					"command":"clean_project"
-				}
-			]
-		},
-		{
-			"caption":"Android managers", 
-			"id":"andrew_managers",
-			"mnemonic":"M",
-			"children":
-			[
-				{
-					"id":"Android SDK Manager",
-					"caption":"Android SDK Manager",
-					"command":"open_sdk",
-					"mnemonic":"S"
-				},
-				{
-					"id":"Android Devices",
-					"command":"open_devices",
-					"mnemonic":"D"
-				},
-				{
-					"id":"DDMS",
-					"caption":"DDMS",
-					"command":"open_ddms",
-					"mnemonic":"M"
 				}
 			]
 		},
