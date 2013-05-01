@@ -3,7 +3,5 @@
    	{ "keys": ["ctrl+alt+shift+r"], "command": "resources" },
    	{ "keys": ["ctrl+alt+shift+b"], "command": "compile_and_install_to_device" },
 
-   	{ "keys": ["ctrl+alt+shift+s"], "command": "open_sdk" },
-   	{ "keys": ["ctrl+alt+shift+d"], "command": "open_devices" },
-   	{ "keys": ["ctrl+alt+shift+f"], "command": "open_ddms" }
+   	{ "keys": ["ctrl+alt+shift+m"], "command": "open_monitor" }
 ]
