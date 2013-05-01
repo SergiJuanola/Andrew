@@ -39,7 +39,7 @@ class NewAndroidProjectCommand(sublime_plugin.WindowCommand):
     def on_done3(self, text):
         self.package = text
         settings = sublime.load_settings('Andrew.sublime-settings')
-        self.window.show_input_panel("Path to project:", settings.get('workspace') + self.activity + "/", self.on_done4, None, None)
+        self.window.show_input_panel("Path to project:", settings.get('workspace') + self.activity + os.sep, self.on_done4, None, None)
 
     def on_done4(self, text):
         self.foldername = text
@@ -51,13 +51,33 @@ class NewAndroidProjectCommand(sublime_plugin.WindowCommand):
         p = subprocess.Popen(cmd_a, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
         if p.stdout is not None:
             msg = p.stdout.readline()
-            print(msg)
         self.window.open_file(self.foldername + "AndroidManifest.xml")
         os.chdir(self.foldername)
         self.window.run_command("save_project_as")
         self.window.run_command("prompt_add_folder")
 
     def get_android_versions(self):
+        if os.name == "nt":
+            return self.get_android_versions_win()
+        else:
+            return self.get_android_versions_unix()
+
+
+    def get_android_versions_win(self):
+        self.versionsHeaders = []
+        self.versions = []
+        settings = sublime.load_settings('Andrew.sublime-settings')
+        command = os.path.join(settings.get('android_sdk_path'), "tools", "android")
+        cmd_a = command + ' list | findstr /spi "android- Name"'
+        p = subprocess.Popen(cmd_a, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+        if p.stdout is not None:
+            msg = p.stdout.read().decode("utf-8", "ignore")
+            for version, name in re.findall(r'"(android-[0-9]+)"\s*Name: ([a-zA-Z0-9\ \.]*)', msg):
+                self.versions.append(version)
+                self.versionsHeaders.append([name, version])
+        return self.versionsHeaders
+
+    def get_android_versions_unix(self):
         self.versionsHeaders = []
         self.versions = []
         settings = sublime.load_settings('Andrew.sublime-settings')
@@ -65,8 +85,8 @@ class NewAndroidProjectCommand(sublime_plugin.WindowCommand):
         cmd_a = command + ' list | grep -A 1 "android-"'
         p = subprocess.Popen(cmd_a, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
         if p.stdout is not None:
-            msg = p.stdout.read()
-            for version, name in re.findall(r'"(android-[0-9]+)"\s*Name: ([a-zA-Z0-9\ \.]*)', msg.decode("utf-8", "ignore")):
+            msg = p.stdout.read().decode("utf-8", "ignore")
+            for version, name in re.findall(r'"(android-[0-9]+)"\s*Name: ([a-zA-Z0-9\ \.]*)', msg):
                 self.versions.append(version)
                 self.versionsHeaders.append([name, version])
         return self.versionsHeaders
