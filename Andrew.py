@@ -118,6 +118,37 @@ class LocateSdkCommand(sublime_plugin.WindowCommand):
             self.manual_input()
 
     def auto_search(self):
+        if os.name == "nt":
+            self.auto_search_win()
+        else:
+            self.auto_search_unix()
+
+    def find_win_logical_drives(self):
+        L = []
+
+        for i in range(ord('a'), ord('z')+1):
+            drive = chr(i)
+            drive += ":\\"
+            if(os.path.exists(drive)):
+                L.append(drive)
+        return L
+
+
+    def auto_search_win(self):
+        drives = self.find_win_logical_drives()
+        for drive in drives:
+            os.chdir(drive)
+            cmd_a = "dir apkbuilder.bat /s/b"
+            p = subprocess.Popen(cmd_a, stdout=subprocess.PIPE, stderr=None, shell=True)
+            if p.stdout is not None:
+                msg = p.stdout.readline().decode('utf-8', 'ignore')
+                if msg.find('apkbuilder') != -1:
+                    msg = msg.rstrip(' \t\r\n\0').replace('tools\\apkbuilder.bat', '')
+                    self.window.show_input_panel("Android SDK Path:", msg, self.on_done2, None, None)
+                    return
+        self.manual_input()
+
+    def auto_search_unix(self):
         cmd_a = "find / -name apkbuilder -print0 2>/dev/null | grep -FzZ -m 1 tools/apkbuilder"
         p = subprocess.Popen(cmd_a, stdout=subprocess.PIPE, stderr=None, shell=True)
         if p.stdout is not None:
@@ -126,6 +157,16 @@ class LocateSdkCommand(sublime_plugin.WindowCommand):
         self.window.show_input_panel("Android SDK Path:", msg, self.on_done2, None, None)
 
     def manual_input(self):
+        if os.name == "nt":
+            self.manual_input_win()
+        else:
+            self.manual_input_unix()
+
+    def manual_input_win(self):
+        settings = sublime.load_settings("Andrew.sublime-settings")
+        self.window.show_input_panel("Android SDK Path:", settings.get("android_sdk_path", "C:\\"), self.on_done2, None, None)
+
+    def manual_input_unix(self):
         settings = sublime.load_settings("Andrew.sublime-settings")
         self.window.show_input_panel("Android SDK Path:", settings.get("android_sdk_path", "/"), self.on_done2, None, None)
 
