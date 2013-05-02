@@ -80,3 +80,5 @@ Have you got a glorious feature you'd like to include? Have you found a bug and 
 ## License ##
 
 This is an open git project for Sublime Text 2. Anyone can contribute here, fork, use this project however you want. It is free of charge, and comes with no warranty. Always use this along with a versioning system to avoid any problem. Use at your own risk.
+
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/11a8d94fa4fd2098219b0d8b5e069986 "githalytics.com")](http://githalytics.com/Korcholis/Andrew)
