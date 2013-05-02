@@ -1,8 +1,15 @@
 # Andrew #
 
-Andrew is a lightweight Android Development Project for Sublime Text 2. It combines perfectly with [ADBView](https://github.com/quarnster/ADBView) to get a functional Android development environment.
+Andrew is a lightweight Android Development Project for Sublime Text 2 and Sublime Text 3. It makes use of [Monitor](http://developer.android.com/tools/help/monitor.html) to get a fully functional environment for Android development, without the hassle of a big IDE.
 
 ## Recent Changes ##
+
+###0.3.2###
+
+* Added support for Windows (locate SDK, create/import projects, use of Monitor)
+* Removed DDMS, Devices and SDK Manager, and changed them for Monitor (the mix of all of them from the latest versions of Android SDK)
+* Import updates a project, so it can be used with Andrew and Sublime Text
+* Added some shortcuts
 
 ###0.3.1###
 

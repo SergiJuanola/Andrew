@@ -1,7 +1,7 @@
 """
 Andrew Plugin for Sublime Text 2
 @author Sergi Juanola
-@version 0.3.1
+@version 0.3.2
 """
 # -*- coding: utf-8 -*-
 import sublime
