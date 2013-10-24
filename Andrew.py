@@ -203,6 +203,7 @@ class LocateSdkCommand(sublime_plugin.WindowCommand):
                     msg = msg.rstrip(' \t\r\n\0').replace('tools\\apkbuilder.bat', '')
                     self.window.show_input_panel("Android SDK Path:", msg, self.on_done2, None, None)
                     return
+                sublime.active_window().active_view().set_status('Found SDK: ' + msg)
         self.manual_input()
 
     def auto_search_unix(self):
@@ -211,6 +212,7 @@ class LocateSdkCommand(sublime_plugin.WindowCommand):
         if p.stdout is not None:
             msg = p.stdout.readline().decode("utf-8", "ignore")
             msg = msg.rstrip(' \t\r\n\0').replace('tools/apkbuilder', '')
+            sublime.active_window().active_view().set_status('Found SDK: ' + msg)
         self.window.show_input_panel("Android SDK Path:", msg, self.on_done2, None, None)
 
     def manual_input(self):
@@ -264,6 +266,7 @@ class CompileDebugCommand(PathDependantCommands):
                     msg = p.stdout.readlines()
                     for line in msg:
                         print(line)
+                    sublime.active_window().active_view().set_status('andrew', 'Build finished!')
             else:
                 print("No build file in project!")
 
@@ -279,6 +282,7 @@ class CompileReleaseCommand(PathDependantCommands):
                 if p.stdout is not None:
                     msg = p.stdout.readline()
                     print(msg)
+                    sublime.active_window().active_view().set_status('andrew', 'Build finished!')
             else:
                 print("No build file in project!")
 
