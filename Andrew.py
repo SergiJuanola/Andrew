@@ -12,6 +12,8 @@ import fnmatch
 import re
 import threading
 
+sublime.log_commands(True)
+
 class AndroidVersionCommand(sublime_plugin.WindowCommand):
     
     versions = []
@@ -219,11 +221,11 @@ class LocateSdkCommand(sublime_plugin.WindowCommand):
 
     def manual_input_win(self):
         settings = sublime.load_settings("Andrew.sublime-settings")
-        self.window.show_input_panel("Android SDK Path:", settings.get("android_sdk_path", "C:\\"), self.on_done2, None, None)
+        self.window.show_input_panel("Android SDK Path: (end with \)", settings.get("android_sdk_path", "C:\\"), self.on_done2, None, None)
 
     def manual_input_unix(self):
         settings = sublime.load_settings("Andrew.sublime-settings")
-        self.window.show_input_panel("Android SDK Path:", settings.get("android_sdk_path", "/"), self.on_done2, None, None)
+        self.window.show_input_panel("Android SDK Path: (end with /)", settings.get("android_sdk_path", "/"), self.on_done2, None, None)
 
     def on_done2(self, text):
         settings = sublime.load_settings('Andrew.sublime-settings')
@@ -235,7 +237,7 @@ class WorkspacePathCommand(sublime_plugin.WindowCommand):
     def run(self):
         settings = sublime.load_settings('Andrew.sublime-settings')
         path = settings.get("workspace", "~/workspace/")
-        self.window.show_input_panel("Workspace Path:", path, self.on_done, None, None)
+        self.window.show_input_panel("Workspace Path:(end with / )", path, self.on_done, None, None)
 
     def on_done(self, text):
         settings = sublime.load_settings('Andrew.sublime-settings')
@@ -252,6 +254,7 @@ class PathDependantCommands(sublime_plugin.WindowCommand):
 
 class CompileDebugCommand(PathDependantCommands):
     def run(self):
+        sublime.active_window().run_command("show_panel", {"panel": "console", "toggle": True})
         for folder in self.window.folders():
             buildxml = self.locatePath("build.xml", folder)
             if buildxml is not None:
@@ -261,10 +264,13 @@ class CompileDebugCommand(PathDependantCommands):
                     msg = p.stdout.readlines()
                     for line in msg:
                         print(line)
+            else:
+                print("No build file in project!")
 
 
 class CompileReleaseCommand(PathDependantCommands):
     def run(self):
+        sublime.active_window().run_command("show_panel", {"panel": "console", "toggle": True})
         for folder in self.window.folders():
             buildxml = self.locatePath("build.xml", folder)
             if buildxml is not None:
@@ -273,10 +279,13 @@ class CompileReleaseCommand(PathDependantCommands):
                 if p.stdout is not None:
                     msg = p.stdout.readline()
                     print(msg)
+            else:
+                print("No build file in project!")
 
 
 class CleanProjectCommand(PathDependantCommands):
     def run(self):
+        sublime.active_window().run_command("show_panel", {"panel": "console", "toggle": True})
         for folder in self.window.folders():
             buildxml = self.locatePath("build.xml", folder)
             if buildxml is not None:
@@ -286,6 +295,8 @@ class CleanProjectCommand(PathDependantCommands):
                     msg = p.stdout.readlines()
                     for line in msg:
                         print(line)
+            else:
+                print("No build file in project!")
 
 
 class LayoutSnippetsCommand(sublime_plugin.TextCommand):
