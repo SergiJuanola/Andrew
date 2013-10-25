@@ -1,7 +1,7 @@
 [
 {
 	"id":"andrew",
-	"caption":"Android",
+	"caption":"Andrew",
 	"mnemonic":"A",
 	"children":
 	[
@@ -22,6 +22,35 @@
 					"mnemonic":"I"
 				}
 			]
+		},{
+			"id":"refactor",
+			"caption":"Refactor...",
+			"mnemonic":"R",
+			"children":
+			[
+				{
+					"id":"refactor_string",
+					"caption":"String",
+					"command":"refactor_string",
+					"mnemonic":"N"
+				}
+			]
+		},
+		{
+			"id":"layout_snippets",
+			"command":"layout_snippets",
+			"mnemonic":"L"
+		},
+		{
+			"id":"resources",
+			"command":"resources",
+			"mnemonic":"R"
+		},
+		{
+			"caption":"Android Monitor", 
+			"id":"android_monitor",
+			"mnemonic":"M",
+			"command":"open_monitor"
 		},
 		{
 			"caption":"Compile...", 
@@ -58,36 +87,6 @@
 					"command":"clean_project"
 				}
 			]
-		},
-		{
-			"id":"refactor",
-			"caption":"Refactor...",
-			"mnemonic":"R",
-			"children":
-			[
-				{
-					"id":"refactor_string",
-					"caption":"String",
-					"command":"refactor_string",
-					"mnemonic":"N"
-				}
-			]
-		},
-		{
-			"id":"layout_snippets",
-			"command":"layout_snippets",
-			"mnemonic":"L"
-		},
-		{
-			"id":"resources",
-			"command":"resources",
-			"mnemonic":"R"
-		},
-		{
-			"caption":"Android Monitor", 
-			"id":"android_monitor",
-			"mnemonic":"M",
-			"command":"open_monitor"
 		},
 		{
 			"caption":"Preferences", 
