@@ -170,7 +170,8 @@ class LocateSdkCommand(sublime_plugin.WindowCommand):
 
     def on_done(self, index):
         if index == 0:
-            self.auto_search()
+            thread = AsyncAutoSearchSDK()
+            thread.start()
         elif index == 1:
             self.manual_input()
 
@@ -234,6 +235,62 @@ class LocateSdkCommand(sublime_plugin.WindowCommand):
         settings.set('android_sdk_path', text)
         sublime.save_settings('Andrew.sublime-settings')
 
+class AsyncAutoSearchSDK(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.msgs = []
+
+    def run(self):
+        print("Searching")
+        if os.name == "nt":
+            self.auto_search_win()
+        else:
+            self.auto_search_unix()
+
+    def auto_search_win(self):
+        drives = self.find_win_logical_drives()
+        for drive in drives:
+            os.chdir(drive)
+            cmd_a = "dir apkbuilder.bat /s/b"
+            p = subprocess.Popen(cmd_a, stdout=subprocess.PIPE, stderr=None, shell=True)
+            if p.stdout is not None:
+                msg = p.stdout.readline().decode('utf-8', 'ignore')
+                if msg.find('apkbuilder') != -1:
+                    msg = msg.rstrip(' \t\r\n\0').replace('tools\\apkbuilder.bat', '')
+                    self.window.show_input_panel("Android SDK Path:", msg, self.on_done2, None, None)
+                    return
+                sublime.active_window().active_view().set_status('Found SDK: ' + msg)
+        self.manual_input()
+
+    def auto_search_unix(self):
+        print("Searching for unix android sdk")
+        cmd_a = "find ~/Dropbox/Servers/Portable -path '*/tools/android' 2> /dev/null"
+        p = subprocess.Popen(cmd_a, stdout=subprocess.PIPE, stderr=None, shell=True)
+        print(p.stdout)
+        if p.stdout is not None:
+            self.msgs = p.stdout.readlines()
+            if len(self.msgs) > 0:
+                for i in range(0,len(self.msgs)):
+                    self.msgs[i] = self.msgs[i].decode("utf-8")
+                    self.msgs[i] = self.msgs[i].replace('tools/android\n', '')
+            if len(self.msgs) == 1:
+                sublime.active_window().active_view().set_status('andrew','Found SDK at :' + self.msgs[0])
+                self.save_sdk_path(self.msgs[0])
+            else:
+                sublime.active_window().active_view().set_status('andrew','Found multiple SDKs')
+                sublime.active_window().show_quick_panel(self.msgs,self.choose_path)
+        else:
+            print("Did not find an SDK!")
+
+    def choose_path(self,index):
+        sublime.active_window().active_view().set_status('andrew','Choose SDK at :' + self.msgs[index])
+        self.save_sdk_path(self.msgs[index])
+        return
+
+    def save_sdk_path(self, text):
+        settings = sublime.load_settings('Andrew.sublime-settings')
+        settings.set('android_sdk_path', text)
+        sublime.save_settings('Andrew.sublime-settings')
 
 class WorkspacePathCommand(sublime_plugin.WindowCommand):
     def run(self):
