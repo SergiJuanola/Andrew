@@ -13,7 +13,7 @@ import re
 import threading
 from .thread_progress import ThreadProgress
 
-sublime.log_commands(True)
+#sublime.log_commands(True)
 
 class AndroidVersionCommand(sublime_plugin.WindowCommand):
     
@@ -445,7 +445,7 @@ class CompileAndInstallToDeviceCommand(PathDependantCommands):
             if not before:
                 dir = 1
             i += dir
-
+            state_name = ""
             if thread.phase == 1:
                 state_name = 'Compiling project'
             elif thread.phase == 2:
