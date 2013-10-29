@@ -290,6 +290,8 @@ class PathDependantCommands(sublime_plugin.WindowCommand):
 
 class CompileDebugCommand(PathDependantCommands):
     def run(self):
+        for view in sublime.active_window().views():
+            view.run_command('save')
         sublime.active_window().run_command("show_panel", {"panel": "console", "toggle": True})
         for folder in self.window.folders():
             buildxml = self.locatePath("build.xml", folder)
@@ -307,6 +309,8 @@ class CompileDebugCommand(PathDependantCommands):
 
 class CompileReleaseCommand(PathDependantCommands):
     def run(self):
+        for view in sublime.active_window().views():
+            view.run_command('save')
         sublime.active_window().run_command("show_panel", {"panel": "console", "toggle": True})
         for folder in self.window.folders():
             buildxml = self.locatePath("build.xml", folder)
@@ -410,6 +414,8 @@ class ResourcesCommand(sublime_plugin.TextCommand):
 class CompileAndInstallToDeviceCommand(PathDependantCommands):
 
     def run(self):
+        for view in sublime.active_window().views():
+            view.run_command('save')
         thread = AsyncInstallToDevice()
         thread.start()
         self.handle_thread(thread)
