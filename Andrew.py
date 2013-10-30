@@ -301,7 +301,7 @@ class CompileDebugCommand(PathDependantCommands):
                 if p.stdout is not None:
                     msg = p.stdout.readlines()
                     for line in msg:
-                        print(line)
+                        print(line.decode("utf-8", "ignore"))
                     sublime.active_window().active_view().set_status('andrew','Build Finished' )
             else:
                 print("No build file in project!")
@@ -319,7 +319,7 @@ class CompileReleaseCommand(PathDependantCommands):
                 p = subprocess.Popen("ant release", cwd=path, stdout=subprocess.PIPE, stderr=None, shell=True)
                 if p.stdout is not None:
                     msg = p.stdout.readline()
-                    print(msg)
+                    print(msg.decode("utf-8", "ignore"))
                     sublime.active_window().active_view().set_status('andrew', 'Build finished!')
             else:
                 print("No build file in project!")
@@ -336,7 +336,7 @@ class CleanProjectCommand(PathDependantCommands):
                 if p.stdout is not None:
                     msg = p.stdout.readlines()
                     for line in msg:
-                        print(line)
+                        print(line.decode("utf-8", "ignore"))
             else:
                 print("No build file in project!")
 
@@ -477,13 +477,13 @@ class InstallToDeviceCommand(PathDependantCommands):
                 if p2.stdout is not None:
                     msg = p2.stdout.readlines()
                     for line in msg:
-                        print(line)
+                        print(line.decode("utf-8", "ignore"))
                 cmd_b = command + " shell monkey -v -p " + package + " 1"
                 p3 = subprocess.Popen(cmd_b, cwd=path, stdout=subprocess.PIPE, stderr=None, shell=True)
                 if p3.stdout is not None:
                     msg = p2.stdout.readlines()
                     for line in msg:
-                        print(line)
+                        print(line.decode("utf-8", "ignore"))
 
     def findProject(self, xmlFile):
         file = open(xmlFile, 'r')
