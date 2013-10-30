@@ -292,7 +292,7 @@ class CompileDebugCommand(PathDependantCommands):
     def run(self):
         for view in sublime.active_window().views():
             view.run_command('save')
-        sublime.active_window().run_command("show_panel", {"panel": "console", "toggle": True})
+        sublime.active_window().run_command("show_panel", {"panel": "console", "toggle": False})
         for folder in self.window.folders():
             buildxml = self.locatePath("build.xml", folder)
             if buildxml is not None:
@@ -311,7 +311,7 @@ class CompileReleaseCommand(PathDependantCommands):
     def run(self):
         for view in sublime.active_window().views():
             view.run_command('save')
-        sublime.active_window().run_command("show_panel", {"panel": "console", "toggle": True})
+        sublime.active_window().run_command("show_panel", {"panel": "console", "toggle": False})
         for folder in self.window.folders():
             buildxml = self.locatePath("build.xml", folder)
             if buildxml is not None:
@@ -327,7 +327,7 @@ class CompileReleaseCommand(PathDependantCommands):
 
 class CleanProjectCommand(PathDependantCommands):
     def run(self):
-        sublime.active_window().run_command("show_panel", {"panel": "console", "toggle": True})
+        sublime.active_window().run_command("show_panel", {"panel": "console", "toggle": False})
         for folder in self.window.folders():
             buildxml = self.locatePath("build.xml", folder)
             if buildxml is not None:
