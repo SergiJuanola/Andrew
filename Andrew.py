@@ -301,7 +301,7 @@ class CompileDebugCommand(PathDependantCommands):
                 if p.stdout is not None:
                     msg = p.stdout.readlines()
                     for line in msg:
-                        print(line.decode("utf-8", "ignore"))
+                        print(line.decode("utf-8", "ignore"),end='')
                     sublime.active_window().active_view().set_status('andrew','Build Finished' )
             else:
                 print("No build file in project!")
@@ -319,7 +319,7 @@ class CompileReleaseCommand(PathDependantCommands):
                 p = subprocess.Popen("ant release", cwd=path, stdout=subprocess.PIPE, stderr=None, shell=True)
                 if p.stdout is not None:
                     msg = p.stdout.readline()
-                    print(msg.decode("utf-8", "ignore"))
+                    print(msg.decode("utf-8", "ignore"),end='')
                     sublime.active_window().active_view().set_status('andrew', 'Build finished!')
             else:
                 print("No build file in project!")
@@ -336,7 +336,7 @@ class CleanProjectCommand(PathDependantCommands):
                 if p.stdout is not None:
                     msg = p.stdout.readlines()
                     for line in msg:
-                        print(line.decode("utf-8", "ignore"))
+                        print(line.decode("utf-8", "ignore"),end='')
             else:
                 print("No build file in project!")
 
