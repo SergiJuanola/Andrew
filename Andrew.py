@@ -11,6 +11,9 @@ import os
 import fnmatch
 import re
 import threading
+from .thread_progress import ThreadProgress
+
+#sublime.log_commands(True)
 
 class AndroidVersionCommand(sublime_plugin.WindowCommand):
     
@@ -162,32 +165,54 @@ class LocateSdkCommand(sublime_plugin.WindowCommand):
     def run(self):
         options = [
             ["Search SDK Automatically", "It may take a few minutes."],
+            ["Search SDK Automatically(fast)", "Only searches your home directory"],
             ["Set SDK Path Manually", "Write down the root path of your android SDK"]
         ]
         self.window.show_quick_panel(options, self.on_done)
 
     def on_done(self, index):
         if index == 0:
-            self.auto_search()
-        elif index == 1:
+            thread = AsyncAutoSearchSDK(False)
+            thread.start()
+            ThreadProgress(thread,"Searching for SDK", '')
+        if index == 1:
+            thread = AsyncAutoSearchSDK(True)
+            thread.start()
+            ThreadProgress(thread,"Searching for SDK in ~/", '')
+        elif index == 2:
             self.manual_input()
 
-    def auto_search(self):
+    def manual_input(self):
+        if os.name == "nt":
+            self.manual_input_win()
+        else:
+            self.manual_input_unix()
+
+    def manual_input_win(self):
+        settings = sublime.load_settings("Andrew.sublime-settings")
+        self.window.show_input_panel("Android SDK Path: (end with \)", settings.get("android_sdk_path", "C:\\"), self.on_done2, None, None)
+
+    def manual_input_unix(self):
+        settings = sublime.load_settings("Andrew.sublime-settings")
+        self.window.show_input_panel("Android SDK Path: (end with /)", settings.get("android_sdk_path", "/"), self.on_done2, None, None)
+
+    def on_done2(self, text):
+        settings = sublime.load_settings('Andrew.sublime-settings')
+        settings.set('android_sdk_path', text)
+        sublime.save_settings('Andrew.sublime-settings')
+
+class AsyncAutoSearchSDK(threading.Thread):
+    def __init__(self,fast):
+        threading.Thread.__init__(self)
+        self.msgs = []
+        self.fast = fast
+
+    def run(self):
+        print("Searching")
         if os.name == "nt":
             self.auto_search_win()
         else:
             self.auto_search_unix()
-
-    def find_win_logical_drives(self):
-        L = []
-
-        for i in range(ord('a'), ord('z')+1):
-            drive = chr(i)
-            drive += ":\\"
-            if(os.path.exists(drive)):
-                L.append(drive)
-        return L
-
 
     def auto_search_win(self):
         drives = self.find_win_logical_drives()
@@ -201,41 +226,54 @@ class LocateSdkCommand(sublime_plugin.WindowCommand):
                     msg = msg.rstrip(' \t\r\n\0').replace('tools\\apkbuilder.bat', '')
                     self.window.show_input_panel("Android SDK Path:", msg, self.on_done2, None, None)
                     return
+                sublime.active_window().active_view().set_status('Found SDK: ' + msg)
         self.manual_input()
 
     def auto_search_unix(self):
-        cmd_a = "find / -name apkbuilder -print0 2>/dev/null | grep -FzZ -m 1 tools/apkbuilder"
-        p = subprocess.Popen(cmd_a, stdout=subprocess.PIPE, stderr=None, shell=True)
-        if p.stdout is not None:
-            msg = p.stdout.readline().decode("utf-8", "ignore")
-            msg = msg.rstrip(' \t\r\n\0').replace('tools/apkbuilder', '')
-        self.window.show_input_panel("Android SDK Path:", msg, self.on_done2, None, None)
-
-    def manual_input(self):
-        if os.name == "nt":
-            self.manual_input_win()
+        print("Searching for unix android sdk")
+        if self.fast:
+            cmd_a = "find ~/ -path '*/tools/android' 2> /dev/null"
         else:
-            self.manual_input_unix()
-
-    def manual_input_win(self):
-        settings = sublime.load_settings("Andrew.sublime-settings")
-        self.window.show_input_panel("Android SDK Path:", settings.get("android_sdk_path", "C:\\"), self.on_done2, None, None)
+            cmd_a = "find / -path '*/tools/android' 2> /dev/null"
+        p = subprocess.Popen(cmd_a, stdout=subprocess.PIPE, stderr=None, shell=True)
+        print(p.stdout)
+        if p.stdout is not None:
+            self.msgs = p.stdout.readlines()
+            if len(self.msgs) > 0:
+                for i in range(0,len(self.msgs)):
+                    self.msgs[i] = self.msgs[i].decode("utf-8")
+                    self.msgs[i] = self.msgs[i].replace('tools/android\n', '')
+            if len(self.msgs) == 1:
+                sublime.active_window().active_view().set_status('andrew','Found SDK at :' + self.msgs[0])
+                self.save_sdk_path(self.msgs[0])
+            elif len(self.msgs) > 1:
+                sublime.active_window().active_view().set_status('andrew','Found multiple SDKs')
+                sublime.active_window().show_quick_panel(self.msgs,self.chose_path)
+            else:
+                sublime.active_window().active_view().set_status('andrew','Could not find and SDK')
+                self.manual_input_unix()
+        else:
+            print("Did not find an SDK!")
 
     def manual_input_unix(self):
         settings = sublime.load_settings("Andrew.sublime-settings")
-        self.window.show_input_panel("Android SDK Path:", settings.get("android_sdk_path", "/"), self.on_done2, None, None)
+        sublime.active_window().show_input_panel("Android SDK Path: (end with /)", settings.get("android_sdk_path", "/"), self.save_sdk_path, None, None)
 
-    def on_done2(self, text):
+    def chose_path(self,index):
+        sublime.active_window().active_view().set_status('andrew','Chose SDK at :' + self.msgs[index])
+        self.save_sdk_path(self.msgs[index])
+        return
+
+    def save_sdk_path(self, text):
         settings = sublime.load_settings('Andrew.sublime-settings')
         settings.set('android_sdk_path', text)
         sublime.save_settings('Andrew.sublime-settings')
-
 
 class WorkspacePathCommand(sublime_plugin.WindowCommand):
     def run(self):
         settings = sublime.load_settings('Andrew.sublime-settings')
         path = settings.get("workspace", "~/workspace/")
-        self.window.show_input_panel("Workspace Path:", path, self.on_done, None, None)
+        self.window.show_input_panel("Workspace Path:(end with / )", path, self.on_done, None, None)
 
     def on_done(self, text):
         settings = sublime.load_settings('Andrew.sublime-settings')
@@ -252,6 +290,9 @@ class PathDependantCommands(sublime_plugin.WindowCommand):
 
 class CompileDebugCommand(PathDependantCommands):
     def run(self):
+        for view in sublime.active_window().views():
+            view.run_command('save')
+        sublime.active_window().run_command("show_panel", {"panel": "console", "toggle": False})
         for folder in self.window.folders():
             buildxml = self.locatePath("build.xml", folder)
             if buildxml is not None:
@@ -260,11 +301,17 @@ class CompileDebugCommand(PathDependantCommands):
                 if p.stdout is not None:
                     msg = p.stdout.readlines()
                     for line in msg:
-                        print(line)
+                        print(line.decode("utf-8", "ignore"),end='')
+                    sublime.active_window().active_view().set_status('andrew','Build Finished' )
+            else:
+                print("No build file in project!")
 
 
 class CompileReleaseCommand(PathDependantCommands):
     def run(self):
+        for view in sublime.active_window().views():
+            view.run_command('save')
+        sublime.active_window().run_command("show_panel", {"panel": "console", "toggle": False})
         for folder in self.window.folders():
             buildxml = self.locatePath("build.xml", folder)
             if buildxml is not None:
@@ -272,11 +319,15 @@ class CompileReleaseCommand(PathDependantCommands):
                 p = subprocess.Popen("ant release", cwd=path, stdout=subprocess.PIPE, stderr=None, shell=True)
                 if p.stdout is not None:
                     msg = p.stdout.readline()
-                    print(msg)
+                    print(msg.decode("utf-8", "ignore"),end='')
+                    sublime.active_window().active_view().set_status('andrew', 'Build finished!')
+            else:
+                print("No build file in project!")
 
 
 class CleanProjectCommand(PathDependantCommands):
     def run(self):
+        sublime.active_window().run_command("show_panel", {"panel": "console", "toggle": False})
         for folder in self.window.folders():
             buildxml = self.locatePath("build.xml", folder)
             if buildxml is not None:
@@ -285,7 +336,9 @@ class CleanProjectCommand(PathDependantCommands):
                 if p.stdout is not None:
                     msg = p.stdout.readlines()
                     for line in msg:
-                        print(line)
+                        print(line.decode("utf-8", "ignore"),end='')
+            else:
+                print("No build file in project!")
 
 
 class LayoutSnippetsCommand(sublime_plugin.TextCommand):
@@ -361,6 +414,8 @@ class ResourcesCommand(sublime_plugin.TextCommand):
 class CompileAndInstallToDeviceCommand(PathDependantCommands):
 
     def run(self):
+        for view in sublime.active_window().views():
+            view.run_command('save')
         thread = AsyncInstallToDevice()
         thread.start()
         self.handle_thread(thread)
@@ -390,7 +445,7 @@ class CompileAndInstallToDeviceCommand(PathDependantCommands):
             if not before:
                 dir = 1
             i += dir
-
+            state_name = ""
             if thread.phase == 1:
                 state_name = 'Compiling project'
             elif thread.phase == 2:
@@ -422,13 +477,13 @@ class InstallToDeviceCommand(PathDependantCommands):
                 if p2.stdout is not None:
                     msg = p2.stdout.readlines()
                     for line in msg:
-                        print(line)
+                        print(line.decode("utf-8", "ignore"))
                 cmd_b = command + " shell monkey -v -p " + package + " 1"
                 p3 = subprocess.Popen(cmd_b, cwd=path, stdout=subprocess.PIPE, stderr=None, shell=True)
                 if p3.stdout is not None:
                     msg = p2.stdout.readlines()
                     for line in msg:
-                        print(line)
+                        print(line.decode("utf-8", "ignore"))
 
     def findProject(self, xmlFile):
         file = open(xmlFile, 'r')
